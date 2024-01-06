@@ -15,6 +15,89 @@ let gameInterval;
 let gameSpeedDelay = 200;
 let gameStarted = false;
 
+// Touch variables
+let touchStartX, touchStartY, touchEndX, touchEndY;
+
+// Touch event listeners
+document.addEventListener('touchstart', handleTouchStart);
+document.addEventListener('touchmove', handleTouchMove);
+document.addEventListener('touchend', handleTouchEnd);
+
+// Key press event listener
+function handleKeyPress(event) {
+  if (!gameStarted && (event.code === 'Space' || event.key === ' ')) {
+    startGame();
+  } else {
+    handleDirectionChange(event);
+  }
+}
+
+// Touch event handlers
+function handleTouchStart(event) {
+  if (event.touches.length === 1) {
+    touchStartX = event.touches[0].pageX;
+    touchStartY = event.touches[0].pageY;
+  }
+}
+
+function handleTouchMove(event) {
+  event.preventDefault();
+}
+
+function handleTouchEnd(event) {
+  if (event.changedTouches.length === 1) {
+    touchEndX = event.changedTouches[0].pageX;
+    touchEndY = event.changedTouches[0].pageY;
+    handleSwipe();
+  }
+}
+
+// Swipe handling
+function handleSwipe() {
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = touchEndY - touchStartY;
+
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    // Horizontal swipe
+    if (deltaX > 0) {
+      // Swipe right
+      direction = 'right';
+    } else {
+      // Swipe left
+      direction = 'left';
+    }
+  } else {
+    // Vertical swipe
+    if (deltaY > 0) {
+      // Swipe down
+      direction = 'down';
+    } else {
+      // Swipe up
+      direction = 'up';
+    }
+  }
+}
+
+// Create a snake or food cube/div
+function createGameElement(tag, className) {
+  const element = document.createElement(tag);
+  element.className = className;
+  return element;
+}
+
+// Set the position of snake or food
+function setPosition(element, position) {
+  element.style.gridColumn = position.x;
+  element.style.gridRow = position.y;
+}
+
+// Generate food
+function generateFood() {
+  const x = Math.floor(Math.random() * gridSize) + 1;
+  const y = Math.floor(Math.random() * gridSize) + 1;
+  return { x, y };
+}
+
 // Draw game map, snake, food
 function draw() {
   board.innerHTML = '';
@@ -39,26 +122,6 @@ function drawFood() {
     setPosition(foodElement, food);
     board.appendChild(foodElement);
   }
-}
-
-// Create a snake or food cube/div
-function createGameElement(tag, className) {
-  const element = document.createElement(tag);
-  element.className = className;
-  return element;
-}
-
-// Set the position of snake or food
-function setPosition(element, position) {
-  element.style.gridColumn = position.x;
-  element.style.gridRow = position.y;
-}
-
-// Generate food
-function generateFood() {
-  const x = Math.floor(Math.random() * gridSize) + 1;
-  const y = Math.floor(Math.random() * gridSize) + 1;
-  return { x, y };
 }
 
 // Moving the snake
@@ -107,28 +170,27 @@ function startGame() {
   }, gameSpeedDelay);
 }
 
-// Keypress event listener
-function handleKeyPress(event) {
-  if (!gameStarted && (event.code === 'Space' || event.key === ' ')) {
-    startGame();
-  } else {
-    handleDirectionChange(event);
-  }
-}
-
 // Handle direction change
 function handleDirectionChange(event) {
   switch (event.key) {
     case 'ArrowUp':
+    case 'w':
+    case 'W':
       direction = 'up';
       break;
     case 'ArrowDown':
+    case 's':
+    case 'S':
       direction = 'down';
       break;
     case 'ArrowLeft':
+    case 'a':
+    case 'A':
       direction = 'left';
       break;
     case 'ArrowRight':
+    case 'd':
+    case 'D':
       direction = 'right';
       break;
   }
@@ -198,3 +260,4 @@ function updateHighScore() {
   }
   highScoreText.style.display = 'block';
 }
+
