@@ -161,13 +161,15 @@ function handleFoodCollision() {
 
 // Start game function
 function startGame() {
-  gameStarted = true;
-  instructionText.style.display = 'none';
-  logo.style.display = 'none';
-  gameInterval = setInterval(() => {
-    move();
-    draw();
-  }, gameSpeedDelay);
+  if (!gameStarted) {
+    gameStarted = true;
+    instructionText.style.display = 'none';
+    logo.style.display = 'none';
+    gameInterval = setInterval(() => {
+      move();
+      draw();
+    }, gameSpeedDelay);
+  }
 }
 
 // Handle direction change
@@ -255,9 +257,6 @@ function stopGame() {
 function updateHighScore() {
   const currentScore = snake.length - 1;
   if (currentScore > highScore) {
-    highScore = currentScore;
-    highScoreText.textContent = highScore.toString().padStart(3, '0');
-  }
-  highScoreText.style.display = 'block';
-}
+   
+
 
